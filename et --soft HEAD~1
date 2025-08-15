@@ -1,0 +1,21 @@
+[33mcommit 46f1ad782e3da6204f3ee72b3e2b11c883ededcd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: jafar90147677 <jafarsadiqe.2001@gmail.com>
+Date:   Fri Aug 15 18:30:55 2025 +0530
+
+    improved
+
+.env
+GITHUB_SETUP.md
+check-postgresql17-connection.ps1
+connect-to-docker-postgresql.md
+connect-to-postgresql17.md
+data/commit.json
+database-service/main.py
+database/init.sql
+docker-compose.yml
+fix-docker.ps1
+pgadmin-connection-guide.md
+react-frontend/nginx.conf
+react-frontend/src/App.js
+setup-github.ps1
+test-pgadmin-connection.ps1

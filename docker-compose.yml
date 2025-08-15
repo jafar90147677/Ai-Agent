@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Using Local pgAdmin4 Database (PostgreSQL container removed)
+
+  # API Gateway Service (Main API - Port 8000)
+  api-gateway-service:
+    build: ./api-gateway-service
+    container_name: github-tracker-api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPO=${GITHUB_REPO}
+    depends_on:
+      - github-service
+      - ai-service
+      - database-service
+      - github-analysis-service
+    networks:
+      - github-tracker-network
+    restart: unless-stopped
+
+  # GitHub Service (Internal - No external port)
+  github-service:
+    build: ./github-service
+    container_name: github-tracker-github-service
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPO=${GITHUB_REPO}
+    networks:
+      - github-tracker-network
+    restart: unless-stopped
+
+  # AI Service (Internal - No external port)
+  ai-service:
+    build: ./ai-service
+    container_name: github-tracker-ai-service
+    environment:
+      - AI_CONFIDENCE_THRESHOLD=0.7
+    depends_on:
+      - database-service
+    networks:
+      - github-tracker-network
+    restart: unless-stopped
+
+  # Database Service (Internal - No external port)
+  database-service:
+    build: ./database-service
+    container_name: github-tracker-database-service
+    environment:
+      - DATABASE_URL=postgresql://postgres:root@host.docker.internal:5433/tracker_project_db
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+    networks:
+      - github-tracker-network
+    restart: unless-stopped
+
+  # GitHub Analysis Service (Internal - No external port)
+  github-analysis-service:
+    build: ./github-analysis-service
+    container_name: github-tracker-analysis-service
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPO=${GITHUB_REPO}
+    networks:
+      - github-tracker-network
+    restart: unless-stopped
+
+  # React Frontend
+  react-frontend:
+    build: ./react-frontend
+    container_name: github-tracker-react-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-gateway-service
+    networks:
+      - github-tracker-network
+    restart: unless-stopped
+
+networks:
+  github-tracker-network:
+    driver: bridge
